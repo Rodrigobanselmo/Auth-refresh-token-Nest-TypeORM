@@ -25,7 +25,7 @@
 ## Description
 
 <p align="center">
-  <a target="blank"><img src="/readme/swagger.png" width="320" alt="Nest Logo" /></a>
+  <img src="/readme/swagger.png" width="100%" alt="swagger image" />
 </p>
 
 ## Description

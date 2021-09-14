@@ -1,3 +1,4 @@
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Body, Controller, Delete, Post } from '@nestjs/common';
 import { UsersService } from 'src/modules/users/users.service';
@@ -6,10 +7,7 @@ import { Public } from 'src/shared/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('session')
@@ -19,7 +17,7 @@ export class AuthController {
 
   @Public()
   @Post('refresh')
-  refresh(@Body() { refresh_token }: { refresh_token: string }) {
+  refresh(@Body() { refresh_token }: RefreshTokenDto) {
     return this.authService.refresh(refresh_token);
   }
 

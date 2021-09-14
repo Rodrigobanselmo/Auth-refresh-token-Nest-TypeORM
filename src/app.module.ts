@@ -7,7 +7,6 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UsersModule } from './modules/users/users.module';
-import appConfig from './config/app.config';
 
 @Module({
   imports: [

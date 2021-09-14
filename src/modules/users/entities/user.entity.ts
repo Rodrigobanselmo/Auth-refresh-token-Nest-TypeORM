@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -17,7 +18,14 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
+
+  @Column('text', { array: true, default: [] })
+  roles: string[];
+
+  @Column('text', { array: true, default: [] })
+  permissions: string[];
 
   @Column({ default: null })
   avatar?: string;

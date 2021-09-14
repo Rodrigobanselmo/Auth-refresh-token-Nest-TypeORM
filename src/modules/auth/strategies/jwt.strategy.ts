@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -8,6 +9,8 @@ interface ITokenPayload {
   iat: number;
   sub: string;
   email: string;
+  roles: string[];
+  permissions: string[];
 }
 
 @Injectable()
@@ -20,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: ITokenPayload) {
-    return { userId: payload.sub, email: payload.email };
+  async validate({ exp, iat, sub, ...rest }: ITokenPayload) {
+    return { user_id: sub, ...rest };
   }
 }

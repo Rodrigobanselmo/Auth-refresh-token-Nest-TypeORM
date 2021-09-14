@@ -5,23 +5,36 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import authConfig from 'src/config/auth.config';
+import { ConfigService } from '@nestjs/config';
+import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
+import { DayJSProvider } from 'src/shared/providers/DateProvider/implementations/DayJSProvider';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserToken } from './entities/user-tokens.entity';
+import { UserTokensRepository } from './repositories/implementations/UsersTokensRepository';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    TypeOrmModule.forFeature([UserToken]),
     JwtModule.registerAsync({
       imports: [],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('TOKEN_SECRET'),
-        signOptions: { expiresIn: '60s' },
+        signOptions: {
+          expiresIn: configService.get<string>('TOKEN_EXPIRES_MIN'),
+        },
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    HashProvider,
+    DayJSProvider,
+    UserTokensRepository,
+  ],
 })
 export class AuthModule {}

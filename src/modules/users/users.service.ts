@@ -31,7 +31,7 @@ export class UsersService {
       password: passHash,
     });
 
-    return classToClass(user);
+    return user;
   }
 
   async update(
@@ -62,7 +62,7 @@ export class UsersService {
 
     const user = await this.userRepository.update(id, updateUserDto);
 
-    return classToClass(user);
+    return user;
   }
 
   async remove(id: number) {

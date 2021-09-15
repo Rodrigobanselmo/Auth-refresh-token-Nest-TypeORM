@@ -18,7 +18,8 @@ export class UserTokensRepository implements IUsersTokensRepository {
 
   async create(user_id: number, payload: PayloadRefreshTokenDto) {
     const dateNow = this.dateProvider.dateNow();
-    const expiresRefreshTokenDays = 1;
+    const expiresRefreshTokenDays =
+      Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS) || 1;
 
     const refreshTokenExpiresDate = this.dateProvider.addDay(
       dateNow,
@@ -27,7 +28,7 @@ export class UserTokensRepository implements IUsersTokensRepository {
 
     const refresh_token = this.jwtService.sign(payload, {
       secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRES_DAYS,
+      expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS}d`,
     });
 
     const usersToken = this.userTokensRepository.create({
@@ -67,10 +68,11 @@ export class UserTokensRepository implements IUsersTokensRepository {
 
   async deleteAll() {
     const currentDate = this.dateProvider.dateNow();
+    console.log('currentDate', currentDate);
     const deletedResult = await this.userTokensRepository
       .createQueryBuilder()
       .delete()
-      .where('expires_date >= :currentDate', {
+      .where('expires_date <= :currentDate', {
         currentDate,
       })
       .execute();

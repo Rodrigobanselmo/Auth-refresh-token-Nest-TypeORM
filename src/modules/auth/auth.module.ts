@@ -22,7 +22,7 @@ import { UserTokensRepository } from './repositories/implementations/UsersTokens
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('TOKEN_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('TOKEN_EXPIRES_MIN'),
+          expiresIn: `${configService.get<string>('TOKEN_EXPIRES_MIN')}m`,
         },
       }),
       inject: [ConfigService],

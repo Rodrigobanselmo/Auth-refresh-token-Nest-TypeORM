@@ -1,22 +1,21 @@
+import { RefreshTokenEntity } from 'src/modules/auth/entities/refresh-tokens.entity';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DayJSProvider } from 'src/shared/providers/DateProvider/implementations/DayJSProvider';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserToken } from 'src/modules/users/entities/user-tokens.entity';
 import { PayloadRefreshTokenDto } from '../../dto/payload-refresh-token.dto';
 import { IUsersTokensRepository } from '../IUsersTokensRepository';
+import { RefreshTokenDto } from '../../dto/refresh-token.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserTokensRepository implements IUsersTokensRepository {
   constructor(
-    @InjectRepository(UserToken)
-    private readonly userTokensRepository: Repository<UserToken>,
+    private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly dateProvider: DayJSProvider,
   ) {}
 
-  async create(user_id: number, payload: PayloadRefreshTokenDto) {
+  async create(userId: number, payload: PayloadRefreshTokenDto) {
     const dateNow = this.dateProvider.dateNow();
     const expiresRefreshTokenDays =
       Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS) || 1;
@@ -31,56 +30,52 @@ export class UserTokensRepository implements IUsersTokensRepository {
       expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS}d`,
     });
 
-    const usersToken = this.userTokensRepository.create({
-      refresh_token,
-      expires_date: refreshTokenExpiresDate,
-      user_id,
+    return this.prisma.refreshToken.create({
+      data: {
+        refresh_token,
+        expires_date: refreshTokenExpiresDate,
+        userId,
+      },
     });
-
-    return this.userTokensRepository.save(usersToken);
   }
 
-  async findByUserIdAndRefreshToken(
-    user_id: number,
-    refresh_token: string,
-  ): Promise<UserToken | undefined> {
-    const userTokens = await this.userTokensRepository.findOne({
-      user_id,
-      refresh_token,
+  async findByUserIdAndRefreshToken(userId: number, refresh_token: string) {
+    const userTokens = await this.prisma.refreshToken.findFirst({
+      where: { userId, refresh_token },
     });
+    if (!userTokens) return userTokens;
 
     return userTokens;
   }
 
-  async findByRefreshToken(
-    refresh_token: string,
-  ): Promise<UserToken | undefined> {
-    const userTokens = await this.userTokensRepository.findOne({
-      refresh_token,
+  async findByRefreshToken(refresh_token: string) {
+    const userTokens = await this.prisma.refreshToken.findFirst({
+      where: { refresh_token },
     });
+    if (!userTokens) return userTokens;
 
     return userTokens;
   }
 
   async deleteById(id: string) {
-    await this.userTokensRepository.delete(id);
+    await this.prisma.refreshToken.delete({ where: { id } });
   }
 
   async deleteAll() {
     const currentDate = this.dateProvider.dateNow();
-    console.log('currentDate', currentDate);
-    const deletedResult = await this.userTokensRepository
-      .createQueryBuilder()
-      .delete()
-      .where('expires_date <= :currentDate', {
-        currentDate,
-      })
-      .execute();
+
+    const deletedResult = await this.prisma.refreshToken.deleteMany({
+      where: {
+        expires_date: {
+          lte: currentDate,
+        },
+      },
+    });
 
     return deletedResult;
   }
 
   async deleteByRefreshToken(refresh_token: string) {
-    await this.userTokensRepository.delete({ refresh_token });
+    await this.prisma.refreshToken.deleteMany({ where: { refresh_token } });
   }
 }

@@ -1,35 +1,37 @@
+import { User } from '.prisma/client';
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import {
-  Column,
-  Entity,
-  CreateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
 
-@Entity()
-export class User {
-  @PrimaryGeneratedColumn()
+export class UserEntity implements User {
+  @ApiProperty()
   id: number;
 
-  @Column()
+  @ApiProperty()
   name: string;
 
-  @Column({ unique: true })
+  @ApiProperty()
   email: string;
 
-  @Column()
   @Exclude()
+  @ApiProperty()
   password: string;
 
-  @Column('text', { array: true, default: [] })
+  @ApiProperty()
   roles: string[];
 
-  @Column('text', { array: true, default: [] })
+  @ApiProperty()
   permissions: string[];
 
-  @Column({ default: null })
-  avatar?: string;
+  @ApiProperty({ required: false, nullable: true })
+  avatar: string | null;
 
-  @CreateDateColumn()
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty()
   created_at: Date;
+
+  constructor(partial: Partial<UserEntity>) {
+    Object.assign(this, partial);
+  }
 }

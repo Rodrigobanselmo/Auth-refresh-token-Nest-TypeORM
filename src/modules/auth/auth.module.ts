@@ -8,15 +8,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
 import { DayJSProvider } from 'src/shared/providers/DateProvider/implementations/DayJSProvider';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserToken } from './entities/user-tokens.entity';
 import { UserTokensRepository } from './repositories/implementations/UsersTokensRepository';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
-    TypeOrmModule.forFeature([UserToken]),
     JwtModule.registerAsync({
       imports: [],
       useFactory: async (configService: ConfigService) => ({

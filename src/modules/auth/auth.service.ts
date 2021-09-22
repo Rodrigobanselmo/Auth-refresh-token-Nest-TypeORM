@@ -13,6 +13,7 @@ import { classToClass } from 'class-transformer';
 import { PayloadTokenDto } from './dto/payload-token.dto';
 import { PayloadRefreshTokenDto } from './dto/payload-refresh-token.dto';
 import { UserTokensRepository } from './repositories/implementations/UsersTokensRepository';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -55,7 +56,7 @@ export class AuthService {
     return {
       token,
       refresh_token: newRefreshToken.refresh_token,
-      user: classToClass(user),
+      user: classToClass(new UserEntity(user)),
     };
   }
 
@@ -71,10 +72,10 @@ export class AuthService {
         },
       );
 
-      const user_id = Number(sub);
+      const userId = Number(sub);
       const userRefreshToken =
         await this.userTokensRepository.findByUserIdAndRefreshToken(
-          user_id,
+          userId,
           refresh_token,
         );
 
@@ -82,7 +83,7 @@ export class AuthService {
         throw new UnauthorizedException('Refresh Token does not exists!');
       }
 
-      const user = await this.usersService.findById(user_id);
+      const user = await this.usersService.findById(userId);
 
       if (!user) {
         throw new NotFoundException('User does not exists!');
@@ -103,7 +104,7 @@ export class AuthService {
       return {
         refresh_token: newRefreshToken.refresh_token,
         token: token,
-        user: classToClass(user),
+        user: classToClass(new UserEntity(user)),
       };
     } catch (err) {
       if (err.message === 'jwt expired') {

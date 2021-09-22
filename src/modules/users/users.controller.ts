@@ -31,7 +31,7 @@ export class UsersController {
 
   @Get('me')
   async findMe(@User() userPayloadDto: UserPayloadDto) {
-    const user = await this.usersService.findById(+userPayloadDto.user_id);
+    const user = await this.usersService.findById(+userPayloadDto.userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }

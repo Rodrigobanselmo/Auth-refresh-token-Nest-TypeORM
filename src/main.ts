@@ -1,5 +1,5 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -14,6 +14,7 @@ async function bootstrap() {
       },
     }),
   );
+  // app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   const options = new DocumentBuilder()
     .setTitle('Refresh Tokens')
     .setDescription(

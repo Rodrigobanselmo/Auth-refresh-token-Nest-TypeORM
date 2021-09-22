@@ -1,13 +1,13 @@
 import { UpdateUserDto } from './../dto/update-user.dto';
 import { CreateUserDto } from './../dto/create-user.dto';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 
 interface IUsersRepository {
-  create(createUserDto: CreateUserDto): Promise<User>;
-  update(id: number, updateUserDto: UpdateUserDto): Promise<User>;
-  removeById(id: number): Promise<User>;
-  findAll(): Promise<User[]>;
-  findByEmail(email: string): Promise<User>;
-  findById(id: number): Promise<User>;
+  create(createUserDto: CreateUserDto): Promise<UserEntity>;
+  update(id: number, updateUserDto: UpdateUserDto): Promise<UserEntity>;
+  removeById(id: number): Promise<UserEntity>;
+  findAll(): Promise<UserEntity[]>;
+  findByEmail(email: string): Promise<UserEntity>;
+  findById(id: number): Promise<UserEntity>;
 }
 export { IUsersRepository };

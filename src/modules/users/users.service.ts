@@ -6,7 +6,6 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
-import { classToClass } from 'class-transformer';
 import { UsersRepository } from './repositories/implementations/UsersRepository';
 
 @Injectable()
@@ -21,6 +20,7 @@ export class UsersService {
       createUserDto.email,
     );
 
+    console.log(`existsUserWithSameEmail`, existsUserWithSameEmail);
     if (existsUserWithSameEmail) {
       throw new BadRequestException('User already exists');
     }
@@ -38,14 +38,15 @@ export class UsersService {
     id: number,
     { password, oldPassword, ...restUpdateUserDto }: UpdateUserDto,
   ) {
+    if (!id) throw new BadRequestException(`Bad Request`);
+
     const updateUserDto: UpdateUserDto = { ...restUpdateUserDto };
+
+    const userData = await this.userRepository.findById(id);
+    if (!userData) throw new NotFoundException(`user #${id} not found`);
 
     if (password) {
       if (!oldPassword) throw new BadRequestException(`Old password missing`);
-
-      const userData = await this.userRepository.findById(id);
-
-      if (!userData) throw new NotFoundException(`user #${id} not found`);
 
       const passwordMatch = await this.hashProvider.compare(
         oldPassword,
@@ -66,6 +67,10 @@ export class UsersService {
   }
 
   async remove(id: number) {
+    if (!id) throw new BadRequestException(`Bad Request`);
+    const userData = await this.userRepository.findById(id);
+    if (!userData) throw new NotFoundException(`user #${id} not found`);
+
     return this.userRepository.removeById(id);
   }
 
@@ -74,10 +79,12 @@ export class UsersService {
   }
 
   findByEmail(email: string) {
+    if (!email) throw new BadRequestException(`Bad Request`);
     return this.userRepository.findByEmail(email);
   }
 
   findById(id: number) {
+    if (!id) throw new BadRequestException(`Bad Request`);
     return this.userRepository.findById(id);
   }
 }

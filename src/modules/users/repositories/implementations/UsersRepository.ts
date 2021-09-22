@@ -1,56 +1,48 @@
 import { UpdateUserDto } from './../../dto/update-user.dto';
 import { CreateUserDto } from './../../dto/create-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
-import { User } from '../../entities/user.entity';
+import { Injectable } from '@nestjs/common';
+import { UserEntity } from '../../entities/user.entity';
 import { IUsersRepository } from '../IUsersRepository';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    private readonly hashProvider: HashProvider,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = this.userRepository.create({
-      ...createUserDto,
+    const user = await this.prisma.user.create({
+      data: createUserDto,
     });
-    return await this.userRepository.save(user);
+    return new UserEntity(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.preload({
-      id: +id,
-      ...updateUserDto,
+    const user = await this.prisma.user.update({
+      where: { id: id },
+      data: updateUserDto,
     });
-    if (!user) {
-      throw new NotFoundException(`user #${id} not found`);
-    }
-    return this.userRepository.save(user);
+    return new UserEntity(user);
   }
 
   async removeById(id: number) {
-    const user = await this.findById(id);
-
-    if (!user) {
-      throw new NotFoundException(`user #${id} not found`);
-    }
-    return this.userRepository.remove(user);
+    const user = await this.prisma.user.delete({ where: { id: id } });
+    return new UserEntity(user);
   }
 
-  findAll() {
-    return this.userRepository.find();
+  async findAll() {
+    const users = await this.prisma.user.findMany();
+    return users.map((user) => new UserEntity(user));
   }
 
-  findByEmail(email: string) {
-    return this.userRepository.findOne({ email });
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) return;
+    return new UserEntity(user);
   }
 
-  findById(id: number) {
-    return this.userRepository.findOne(id);
+  async findById(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) return;
+    return new UserEntity(user);
   }
 }

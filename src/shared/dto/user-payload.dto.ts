@@ -2,7 +2,7 @@ import { IsEmail, IsString } from 'class-validator';
 
 export class UserPayloadDto {
   @IsString()
-  readonly user_id: number;
+  readonly userId: number;
 
   @IsString()
   @IsEmail()

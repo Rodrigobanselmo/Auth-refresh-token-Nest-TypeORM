@@ -4,4 +4,5 @@ export enum Role {
 }
 export enum Permission {
   USER_LIST_ALL = 'user.list-all',
+  USER_LIST_ONE = 'user.list-one',
 }

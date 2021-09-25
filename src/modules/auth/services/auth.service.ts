@@ -5,15 +5,15 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto } from '../dto/login-user.dto';
 import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
 import { classToClass } from 'class-transformer';
-import { PayloadTokenDto } from './dto/payload-token.dto';
-import { PayloadRefreshTokenDto } from './dto/payload-refresh-token.dto';
-import { UserTokensRepository } from './repositories/implementations/UsersTokensRepository';
-import { UserEntity } from '../users/entities/user.entity';
+import { PayloadTokenDto } from '../dto/payload-token.dto';
+import { PayloadRefreshTokenDto } from '../dto/payload-refresh-token.dto';
+import { UserTokensRepository } from '../repositories/implementations/UsersTokensRepository';
+import { UserEntity } from '../../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {

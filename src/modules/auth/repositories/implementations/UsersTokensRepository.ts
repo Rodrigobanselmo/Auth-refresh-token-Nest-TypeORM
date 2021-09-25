@@ -1,11 +1,10 @@
-import { RefreshTokenEntity } from 'src/modules/auth/entities/refresh-tokens.entity';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { DayJSProvider } from 'src/shared/providers/DateProvider/implementations/DayJSProvider';
+
 import { PayloadRefreshTokenDto } from '../../dto/payload-refresh-token.dto';
 import { IUsersTokensRepository } from '../IUsersTokensRepository';
-import { RefreshTokenDto } from '../../dto/refresh-token.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserTokensRepository implements IUsersTokensRepository {

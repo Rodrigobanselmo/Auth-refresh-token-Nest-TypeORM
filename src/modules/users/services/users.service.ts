@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
-import { UsersRepository } from './repositories/implementations/UsersRepository';
+import { UsersRepository } from '../repositories/implementations/UsersRepository';
 
 @Injectable()
 export class UsersService {

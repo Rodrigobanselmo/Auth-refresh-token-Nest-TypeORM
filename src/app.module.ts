@@ -7,6 +7,8 @@ import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UsersModule } from './modules/users/users.module';
 import { RolesGuard } from './shared/guards/roles.guard';
 import { PrismaModule } from './prisma/prisma.module';
+import { TestService } from './modules/test/test.service';
+import { TestController } from './module/test/test.controller';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     PrismaModule,
   ],
-  controllers: [],
+  controllers: [TestController],
   providers: [
     {
       provide: APP_GUARD,
@@ -29,6 +31,7 @@ import { PrismaModule } from './prisma/prisma.module';
       provide: APP_GUARD,
       useClass: PermissionsGuard,
     },
+    TestService,
   ],
 })
 export class AppModule {}

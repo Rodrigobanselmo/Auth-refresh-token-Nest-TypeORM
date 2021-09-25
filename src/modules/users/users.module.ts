@@ -1,6 +1,6 @@
 import { UsersRepository } from './repositories/implementations/UsersRepository';
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UsersService } from './services/users.service';
 import { UsersController } from './users.controller';
 import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
 

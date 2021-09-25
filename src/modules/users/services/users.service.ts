@@ -3,9 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { HashProvider } from '../../../shared/providers/HashProvider/implementations/HashProvider';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
 import { UsersRepository } from '../repositories/implementations/UsersRepository';
 
 @Injectable()
@@ -20,10 +20,10 @@ export class UsersService {
       createUserDto.email,
     );
 
-    console.log(`existsUserWithSameEmail`, existsUserWithSameEmail);
     if (existsUserWithSameEmail) {
       throw new BadRequestException('User already exists');
     }
+
     const passHash = await this.hashProvider.createHash(createUserDto.password);
 
     const user = await this.userRepository.create({
@@ -38,8 +38,6 @@ export class UsersService {
     id: number,
     { password, oldPassword, ...restUpdateUserDto }: UpdateUserDto,
   ) {
-    if (!id) throw new BadRequestException(`Bad Request`);
-
     const updateUserDto: UpdateUserDto = { ...restUpdateUserDto };
 
     const userData = await this.userRepository.findById(id);
@@ -67,24 +65,33 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    if (!id) throw new BadRequestException(`Bad Request`);
     const userData = await this.userRepository.findById(id);
     if (!userData) throw new NotFoundException(`user #${id} not found`);
 
     return this.userRepository.removeById(id);
   }
 
+  async findByEmail(email: string) {
+    if (!email) throw new BadRequestException(`Bad Request`);
+
+    const user = await this.userRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async findById(id: number) {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
   findAll() {
     return this.userRepository.findAll();
-  }
-
-  findByEmail(email: string) {
-    if (!email) throw new BadRequestException(`Bad Request`);
-    return this.userRepository.findByEmail(email);
-  }
-
-  findById(id: number) {
-    if (!id) throw new BadRequestException(`Bad Request`);
-    return this.userRepository.findById(id);
   }
 }

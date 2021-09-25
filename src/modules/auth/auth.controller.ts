@@ -1,7 +1,7 @@
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Body, Controller, Delete, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { Public } from 'src/shared/decorators/public.decorator';
 
 @Controller('auth')

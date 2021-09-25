@@ -3,7 +3,7 @@ import { CreateUserDto } from './../../dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../../entities/user.entity';
 import { IUsersRepository } from '../IUsersRepository';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
@@ -13,6 +13,7 @@ export class UsersRepository implements IUsersRepository {
     const user = await this.prisma.user.create({
       data: createUserDto,
     });
+    if (!user) return;
     return new UserEntity(user);
   }
 
@@ -21,11 +22,13 @@ export class UsersRepository implements IUsersRepository {
       where: { id: id },
       data: updateUserDto,
     });
+    if (!user) return;
     return new UserEntity(user);
   }
 
   async removeById(id: number) {
     const user = await this.prisma.user.delete({ where: { id: id } });
+    if (!user) return;
     return new UserEntity(user);
   }
 

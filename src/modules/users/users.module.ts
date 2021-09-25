@@ -2,7 +2,7 @@ import { UsersRepository } from './repositories/implementations/UsersRepository'
 import { Module } from '@nestjs/common';
 import { UsersService } from './services/users.service';
 import { UsersController } from './users.controller';
-import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
+import { HashProvider } from '../../shared/providers/HashProvider/implementations/HashProvider';
 
 @Module({
   controllers: [UsersController],

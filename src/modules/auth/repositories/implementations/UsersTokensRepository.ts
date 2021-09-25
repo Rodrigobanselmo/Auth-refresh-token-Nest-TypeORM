@@ -1,38 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { DayJSProvider } from 'src/shared/providers/DateProvider/implementations/DayJSProvider';
 
-import { PayloadRefreshTokenDto } from '../../dto/payload-refresh-token.dto';
+import { PrismaService } from '../../../../prisma/prisma.service';
 import { IUsersTokensRepository } from '../IUsersTokensRepository';
 
 @Injectable()
 export class UserTokensRepository implements IUsersTokensRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly dateProvider: DayJSProvider,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(userId: number, payload: PayloadRefreshTokenDto) {
-    const dateNow = this.dateProvider.dateNow();
-    const expiresRefreshTokenDays =
-      Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS) || 1;
-
-    const refreshTokenExpiresDate = this.dateProvider.addDay(
-      dateNow,
-      expiresRefreshTokenDays,
-    );
-
-    const refresh_token = this.jwtService.sign(payload, {
-      secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS}d`,
-    });
-
+  async create(refresh_token: string, userId: number, expires_date: Date) {
     return this.prisma.refreshToken.create({
       data: {
         refresh_token,
-        expires_date: refreshTokenExpiresDate,
+        expires_date,
         userId,
       },
     });
@@ -60,9 +39,7 @@ export class UserTokensRepository implements IUsersTokensRepository {
     await this.prisma.refreshToken.delete({ where: { id } });
   }
 
-  async deleteAll() {
-    const currentDate = this.dateProvider.dateNow();
-
+  async deleteAll(currentDate: Date) {
     const deletedResult = await this.prisma.refreshToken.deleteMany({
       where: {
         expires_date: {

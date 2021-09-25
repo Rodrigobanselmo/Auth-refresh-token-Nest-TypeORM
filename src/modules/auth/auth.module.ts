@@ -2,12 +2,12 @@ import { UsersModule } from '../users/users.module';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
-import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
-import { DayJSProvider } from 'src/shared/providers/DateProvider/implementations/DayJSProvider';
+import { HashProvider } from '../../shared/providers/HashProvider/implementations/HashProvider';
+import { DayJSProvider } from '../../shared/providers/DateProvider/implementations/DayJSProvider';
 import { UserTokensRepository } from './repositories/implementations/UsersTokensRepository';
 
 @Module({

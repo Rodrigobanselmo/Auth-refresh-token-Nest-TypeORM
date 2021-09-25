@@ -8,16 +8,16 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './services/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Public } from 'src/shared/decorators/public.decorator';
-import { User } from 'src/shared/decorators/user.decorator';
-import { Roles } from 'src/shared/decorators/roles.decorator';
-import { Permission, Role } from 'src/shared/constants/authorization';
-import { Permissions } from 'src/shared/decorators/permissions.decorator';
+import { Public } from '../../shared/decorators/public.decorator';
+import { User } from '../../shared/decorators/user.decorator';
+import { Roles } from '../../shared/decorators/roles.decorator';
+import { Permission, Role } from '../../shared/constants/authorization';
+import { Permissions } from '../../shared/decorators/permissions.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -30,13 +30,8 @@ export class UsersController {
   }
 
   @Get('me')
-  async findMe(@User() userPayloadDto: UserPayloadDto) {
-    const user = await this.usersService.findById(+userPayloadDto.userId);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return classToClass(user);
+  findMe(@User() userPayloadDto: UserPayloadDto) {
+    return classToClass(this.usersService.findById(+userPayloadDto.userId));
   }
 
   @Get()
@@ -47,17 +42,20 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return classToClass(this.usersService.findById(+id));
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return classToClass(this.usersService.update(+id, updateUserDto));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return classToClass(this.usersService.remove(+id));
   }
 }

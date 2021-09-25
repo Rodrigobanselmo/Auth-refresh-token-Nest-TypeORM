@@ -1,3 +1,4 @@
+import { DayJSProvider } from '../../../shared/providers/DateProvider/implementations/DayJSProvider';
 import {
   BadRequestException,
   HttpException,
@@ -8,7 +9,7 @@ import {
 import { UsersService } from '../../users/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from '../dto/login-user.dto';
-import { HashProvider } from 'src/shared/providers/HashProvider/implementations/HashProvider';
+import { HashProvider } from '../../../shared/providers/HashProvider/implementations/HashProvider';
 import { classToClass } from 'class-transformer';
 import { PayloadTokenDto } from '../dto/payload-token.dto';
 import { PayloadRefreshTokenDto } from '../dto/payload-refresh-token.dto';
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly hashProvider: HashProvider,
+    private readonly dateProvider: DayJSProvider,
   ) {}
 
   async session({ email, password }: LoginUserDto) {
@@ -48,10 +50,8 @@ export class AuthService {
     } as PayloadTokenDto;
 
     const token = this.jwtService.sign(payload);
-    const newRefreshToken = await this.userTokensRepository.create(
-      user.id,
-      payload,
-    );
+
+    const newRefreshToken = await this.generateRefreshToken(user.id, payload);
 
     return {
       token,
@@ -95,10 +95,7 @@ export class AuthService {
       };
 
       const token = this.jwtService.sign(payload);
-      const newRefreshToken = await this.userTokensRepository.create(
-        user.id,
-        payload,
-      );
+      const newRefreshToken = await this.generateRefreshToken(user.id, payload);
       await this.userTokensRepository.deleteById(userRefreshToken.id);
 
       return {
@@ -115,6 +112,31 @@ export class AuthService {
   }
 
   async deleteAllExpiredRefreshTokens() {
-    return this.userTokensRepository.deleteAll();
+    const currentDate = this.dateProvider.dateNow();
+    return this.userTokensRepository.deleteAll(currentDate);
+  }
+
+  async generateRefreshToken(userId: number, payload: PayloadRefreshTokenDto) {
+    const dateNow = this.dateProvider.dateNow();
+    const expiresRefreshTokenDays =
+      Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS) || 1;
+
+    const refreshTokenExpiresDate = this.dateProvider.addDay(
+      dateNow,
+      expiresRefreshTokenDays,
+    );
+
+    const refresh_token = this.jwtService.sign(payload, {
+      secret: process.env.REFRESH_TOKEN_SECRET,
+      expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS}d`,
+    });
+
+    const newRefreshToken = await this.userTokensRepository.create(
+      refresh_token,
+      userId,
+      refreshTokenExpiresDate,
+    );
+
+    return newRefreshToken;
   }
 }

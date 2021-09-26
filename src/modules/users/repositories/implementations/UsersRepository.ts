@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { UpdateUserDto } from './../../dto/update-user.dto';
 import { CreateUserDto } from './../../dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
@@ -17,7 +18,10 @@ export class UsersRepository implements IUsersRepository {
     return new UserEntity(user);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(
+    id: number,
+    { email, oldPassword, ...updateUserDto }: UpdateUserDto,
+  ) {
     const user = await this.prisma.user.update({
       where: { id: id },
       data: updateUserDto,

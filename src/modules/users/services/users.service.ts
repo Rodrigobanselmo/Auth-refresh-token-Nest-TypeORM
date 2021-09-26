@@ -72,8 +72,6 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    if (!email) throw new BadRequestException(`Bad Request`);
-
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -91,6 +89,7 @@ export class UsersService {
     return user;
   }
 
+  // missing testing
   findAll() {
     return this.userRepository.findAll();
   }

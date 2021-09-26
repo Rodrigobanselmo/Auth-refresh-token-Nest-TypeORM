@@ -22,7 +22,6 @@ export class UserTokensRepository implements IUsersTokensRepository {
       where: { userId, refresh_token },
     });
     if (!userTokens) return userTokens;
-
     return userTokens;
   }
 

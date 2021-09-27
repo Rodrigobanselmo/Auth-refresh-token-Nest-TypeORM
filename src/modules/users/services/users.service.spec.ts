@@ -81,7 +81,6 @@ describe('UsersService', () => {
         });
         throw new Error('error');
       } catch (err) {
-        console.log(`err`, err);
         expect(err).toEqual(new NotFoundException(`user #123 not found`));
       }
     });

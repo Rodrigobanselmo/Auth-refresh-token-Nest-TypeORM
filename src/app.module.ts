@@ -1,3 +1,4 @@
+import { PrismaModule } from './prisma/prisma.module';
 //yarn test:watch -- test.service
 
 import { PermissionsGuard } from './shared/guards/permissions.guard';
@@ -8,7 +9,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { UsersModule } from './modules/users/users.module';
 import { RolesGuard } from './shared/guards/roles.guard';
-import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [

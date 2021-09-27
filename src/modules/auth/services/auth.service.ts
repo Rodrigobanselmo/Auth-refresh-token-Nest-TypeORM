@@ -90,7 +90,14 @@ export class AuthService {
         email: user.email,
       };
 
-      const token = this.jwtService.sign(payload);
+      const payloadToken = {
+        email: user.email,
+        sub: user.id,
+        roles: user.roles,
+        permissions: user.permissions,
+      } as PayloadTokenDto;
+
+      const token = this.jwtService.sign(payloadToken);
       const newRefreshToken = await this.generateRefreshToken(user.id, payload);
       await this.userTokensRepository.deleteById(userRefreshToken.id);
 

@@ -18,9 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:faste2e": "NODE_ENV=test jest --config ./test/jest-e2e.json",
-    "pretest2:e2e": "NODE_ENV=test DATABASE_URL=postgresql://postgres:pass123@localhost:5433/postgres?schema=public docker-compose up -d test_db && npx prisma migrate reset  --schema=./prisma/schema.test.prisma --force",
-    "reset:m": "env-cmd -f .env.test npx prisma migrate reset --force",
+    "test:faste": "NODE_ENV=test jest --config ./test/jest-e2e.json",
     "pretest:e2e": "docker-compose up -d test_db && env-cmd -f .env.test npx prisma migrate dev",
     "test:e2e": "NODE_ENV=test env-cmd -f .env.test jest --config ./test/jest-e2e.json",
     "posttest:e2e": "docker-compose stop test_db && docker-compose rm -f test_db"

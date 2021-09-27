@@ -1,13 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-import { PrismaClient as PrismaClientTest } from '../../node_modules/.prisma/test';
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 
-let Client = PrismaClient as any;
+// const PrismaClientTest = '../../node_modules/.prisma/test';
 
-if (process.env.NODE_ENV === 'test') Client = PrismaClientTest;
+// let Client = PrismaClient as any;
+
+// if (process.env.NODE_ENV === 'test')
+//   import(PrismaClientTest).then((PrismaClient) => (Client = PrismaClient));
 
 @Injectable()
-export class PrismaService extends Client implements OnModuleInit {
+export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
   }

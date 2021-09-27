@@ -8,10 +8,7 @@ class UsersRepositoryInMemory implements IUsersRepository {
   users: User[] = [];
 
   create(createUserDto: CreateUserDto): any {
-    const user = new UserEntity(createUserDto);
-
-    user.id = Math.random();
-
+    const user = new UserEntity({ id: Math.random(), ...createUserDto });
     this.users.push(user);
     return user;
   }
@@ -22,7 +19,7 @@ class UsersRepositoryInMemory implements IUsersRepository {
     const user = this.users[userIndex];
     const updatedUser = { ...user, ...updateUserDto };
     this.users[userIndex] = updatedUser;
-    return updatedUser;
+    return new UserEntity(updatedUser);
   }
   removeById(id: number): any {
     const user = this.users.find((user) => user.id == id);

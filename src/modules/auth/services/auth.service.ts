@@ -68,7 +68,7 @@ export class AuthService {
       const { sub }: PayloadRefreshTokenDto = this.jwtService.verify(
         refresh_token,
         {
-          secret: process.env.REFRESH_TOKEN_SECRET,
+          secret: process.env.REFRESH_TOKEN_SECRET || 'secret',
         },
       );
 
@@ -84,10 +84,6 @@ export class AuthService {
       }
 
       const user = await this.usersService.findById(userId);
-
-      if (!user) {
-        throw new NotFoundException('User does not exists!');
-      }
 
       const payload: PayloadRefreshTokenDto = {
         sub: user.id,
@@ -113,7 +109,7 @@ export class AuthService {
 
   async deleteAllExpiredRefreshTokens() {
     const currentDate = this.dateProvider.dateNow();
-    return this.userTokensRepository.deleteAll(currentDate);
+    return this.userTokensRepository.deleteAllOldTokens(currentDate);
   }
 
   async generateRefreshToken(userId: number, payload: PayloadRefreshTokenDto) {
@@ -127,8 +123,8 @@ export class AuthService {
     );
 
     const refresh_token = this.jwtService.sign(payload, {
-      secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS}d`,
+      secret: process.env.REFRESH_TOKEN_SECRET || 'secret',
+      expiresIn: `${process.env.REFRESH_TOKEN_EXPIRES_DAYS || 1}d`,
     });
 
     const newRefreshToken = await this.userTokensRepository.create(

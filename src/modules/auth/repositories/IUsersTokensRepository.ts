@@ -17,6 +17,6 @@ interface IUsersTokensRepository {
   ): Promise<RefreshTokenEntity | undefined>;
   deleteById(id: string): Promise<void>;
   deleteByRefreshToken(refresh_token: string): Promise<void>;
-  deleteAll(currentDate: Date): Promise<Prisma.BatchPayload>;
+  deleteAllOldTokens(currentDate: Date): Promise<Prisma.BatchPayload>;
 }
 export { IUsersTokensRepository };

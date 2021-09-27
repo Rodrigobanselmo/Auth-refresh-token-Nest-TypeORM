@@ -17,14 +17,6 @@ export class UserTokensRepository implements IUsersTokensRepository {
     });
   }
 
-  async findByUserIdAndRefreshToken(userId: number, refresh_token: string) {
-    const userTokens = await this.prisma.refreshToken.findFirst({
-      where: { userId, refresh_token },
-    });
-    if (!userTokens) return userTokens;
-    return userTokens;
-  }
-
   async findByRefreshToken(refresh_token: string) {
     const userTokens = await this.prisma.refreshToken.findFirst({
       where: { refresh_token },
@@ -34,15 +26,23 @@ export class UserTokensRepository implements IUsersTokensRepository {
     return userTokens;
   }
 
+  async findByUserIdAndRefreshToken(userId: number, refresh_token: string) {
+    const userTokens = await this.prisma.refreshToken.findFirst({
+      where: { userId, refresh_token },
+    });
+    if (!userTokens) return userTokens;
+    return userTokens;
+  }
+
   async deleteById(id: string) {
     await this.prisma.refreshToken.delete({ where: { id } });
   }
 
-  async deleteAll(currentDate: Date) {
+  async deleteAllOldTokens(date: Date) {
     const deletedResult = await this.prisma.refreshToken.deleteMany({
       where: {
         expires_date: {
-          lte: currentDate,
+          lte: date,
         },
       },
     });

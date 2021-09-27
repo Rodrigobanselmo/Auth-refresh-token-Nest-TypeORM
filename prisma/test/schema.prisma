@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// npx prisma generate --schema prisma/schema.test.prisma
+// npx prisma migrate dev --name init --schema=./prisma/schema.test.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_TEST")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./test"
+}
+
+model User {
+  id    Int     @default(autoincrement()) @id
+  email String  @unique
+  password String
+  roles String[]
+  permissions String[]
+  name  String
+  avatar  String?
+  created_at DateTime @default(now())
+  updatedAt  DateTime   @updatedAt
+  refresh_token RefreshToken[]
+}
+
+model RefreshToken {
+  id   String @id @default(uuid())
+  refresh_token String
+  expires_date DateTime
+  created_at DateTime @default(now())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
